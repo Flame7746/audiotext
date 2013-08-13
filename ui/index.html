@@ -45,8 +45,10 @@
         <script src="js/plugins.js"></script>
         <script src="js/main.js"></script>
         <script src="js/audiovis.js"></script>
+        <script src="js/superbutton.js"></script>
         <script src="js/HTML.min.js"></script>
         <script src="js/Nonsense.js"></script>
+        <script src="js/AudioContextMonkeyPatch.js"></script>
 		<script src="js/jquery.hammer.min.js"></script>
 
 		<script>
@@ -80,26 +82,72 @@
 			*/
 
 			// draw the button
-			var canvas = $('#button')[0];
-			var ctx = canvas.getContext('2d');
+			var btn = $('#button')[0];
 
-			var width = 2;
-			var centerX = canvas.width/2;
-			var centerY = canvas.height/2;
-			var radius = canvas.width/2-width/2;
+			btn.recording = false;
+			btn.samples = [];
+			btn.time = 0;
+			btn.max = 10;
 
-			ctx.fillStyle = "#F00";
-			ctx.beginPath();
-			ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI, false);
-			ctx.fillStyle = 'red';
-			ctx.fill();
-			ctx.lineWidth = width;
-			ctx.strokeStyle = '#660000';
-			ctx.stroke();
+			function btnDraw(btn) {
+				var ctx = btn.getContext('2d');
+
+				var width = 2;
+				var centerX = btn.width/2;
+				var centerY = btn.height/2;
+				var radius = btn.width/2-width/2;
+
+				ctx.fillStyle = "#F00";
+				ctx.beginPath();
+				ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI, false);
+				ctx.fillStyle = 'red';
+				ctx.fill();
+				ctx.lineWidth = width;
+				ctx.strokeStyle = '#660000';
+				ctx.stroke();
+
+				// draw amt filled
+				ctx.beginPath();
+				ctx.moveTo(centerX, centerY);
+				var a = btn.time/btn.max * Math.PI * 2 - Math.PI / 2;
+				ctx.lineTo(centerX + radius*Math.cos(a), centerY + radius*Math.sin(a));
+				ctx.strokeStyle = 'blue';
+				ctx.stroke();
+			} btnDraw(btn);
 
 			// set draggable
 			$("#button").draggable({ axis: "y", revert: true, revertDuration: 80,
+				start: function(ev, ui) {
+					if(!button.recording) {
+						button.recording = true;
+
+						var rate = 100;
+						btn.timer = setInterval(function() {
+							btn.time += rate/1000;
+							btnDraw(btn);
+
+							if(btn.time > btn.max) {
+								clearInterval(btn.timer);
+								console.log("button filled 100%");
+								
+								btn.recording = false;
+								btn.time = 0;
+								btnDraw(btn);
+							}
+						}, rate);
+					}
+				},
+
 				stop: function(ev, ui) {
+					if(button.recording) {
+						clearInterval(btn.timer);
+						console.log("button filled "+(100*btn.time/btn.max)+"%");
+
+						btn.recording = false;
+						btn.time = 0;
+						btnDraw(btn);
+					}
+
 					var offset = ui.position.top - ui.originalPosition.top;
 
 					if(offset > 0) {
@@ -116,6 +164,8 @@
 			/*
 				initialize stuff
 			*/
+
+			var btn = new SuperButton($('#button')[0], 10);
 
 			var ns = new Nonsense(Math.random());
 			$('#friend').text(ns.firstName());
