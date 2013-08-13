@@ -10,8 +10,6 @@
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width">
 
-        <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
-
         <link rel="stylesheet" href="css/normalize.css">
         <link rel="stylesheet" href="css/main.css">
         <link rel="stylesheet" href="css/ui.css">
@@ -23,9 +21,22 @@
             <p class="chromeframe">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">activate Google Chrome Frame</a> to improve your experience.</p>
         <![endif]-->
 
+		<div>
+			<table style="width: 100%" id="conversation">
+				<tr>
+					<th align="left">Me</th>
+					<th align="left">Bob</th>
+				</tr>
+				<tr>
+					<td><canvas style="width: 100%; height: 32px;" id="msg1"></canvas></td>
+					<td><p>15 min ago</p><td>
+				</tr>
+			</table>
+		</div>
+
 		<div id="button_bar">
 			<center>
-				<canvas width=64 height=64 id="button" clip-path="url(#clipping)"></canvas>
+				<canvas width=64 height=64 id="button"></canvas>
 			</center>
 		</div>
 
@@ -34,7 +45,24 @@
 		<script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
         <script src="js/plugins.js"></script>
         <script src="js/main.js"></script>
+        <script src="js/audiovis.js"></script>
+        <script src="js/HTML.min.js"></script>
+        <script src="js/Nonsense.js"></script>
 		<script src="js/jquery.hammer.min.js"></script>
+
+		<script>
+			function addMsg() {
+				var ns = new Nonsense();
+				ns.firstName();
+			}
+		</script>
+
+		<script>
+			var c = $('#msg1')[0];
+			c.width = c.clientWidth;
+			c.height = c.clientHeight;
+			fakeAudio(c);
+		</script>
 
 		<script>
 			var canvas = $('#button')[0];
@@ -60,6 +88,7 @@
 			var start = $("#button").get
 			$("#button").draggable({ axis: "y", revert: true, revertDuration: 80,
 				stop: function(ev, ui) {
+					fakeAudio($('#msg1')[0]);
 					var offset = ui.position.top - ui.originalPosition.top;
 
 					if(offset > 0) {
