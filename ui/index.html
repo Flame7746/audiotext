@@ -15,6 +15,7 @@
         <link rel="stylesheet" href="css/normalize.css">
         <link rel="stylesheet" href="css/main.css">
         <link rel="stylesheet" href="css/ui.css">
+		<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
         <script src="js/vendor/modernizr-2.6.2.min.js"></script>
     </head>
     <body>
@@ -22,12 +23,18 @@
             <p class="chromeframe">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">activate Google Chrome Frame</a> to improve your experience.</p>
         <![endif]-->
 
-		<canvas width=64 height=64 id="button" clip-path="url(#clipping)"></canvas>
+		<div id="button_bar">
+			<center>
+				<canvas width=64 height=64 id="button" clip-path="url(#clipping)"></canvas>
+			</center>
+		</div>
 
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
         <script>window.jQuery || document.write('<script src="js/vendor/jquery-1.9.1.min.js"><\/script>')</script>
+		<script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
         <script src="js/plugins.js"></script>
         <script src="js/main.js"></script>
+		<script src="js/jquery.hammer.min.js"></script>
 
 		<script>
 			var canvas = $('#button')[0];
@@ -47,6 +54,21 @@
 			ctx.lineWidth = width;
 			ctx.strokeStyle = '#660000';
 			ctx.stroke();
+		</script>
+
+		<script>
+			var start = $("#button").get
+			$("#button").draggable({ axis: "y", revert: true, revertDuration: 80,
+				stop: function(ev, ui) {
+					var offset = ui.position.top - ui.originalPosition.top;
+
+					if(offset > 0) {
+						alert('trash');
+					} else {
+						alert('send');
+					}
+				}
+			});
 		</script>
 
         <!-- Google Analytics: change UA-XXXXX-X to be your site's ID. -->
