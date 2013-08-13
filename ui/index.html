@@ -21,17 +21,16 @@
             <p class="chromeframe">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">activate Google Chrome Frame</a> to improve your experience.</p>
         <![endif]-->
 
-		<div>
-			<table style="width: 100%" id="conversation">
+		<div id="people">
+			<table class="message">
 				<tr>
 					<th align="left">Me</th>
-					<th align="left">Bob</th>
-				</tr>
-				<tr>
-					<td><canvas style="width: 100%; height: 32px;" id="msg1"></canvas></td>
-					<td><p>15 min ago</p><td>
+					<th align="right" id="friend"></th>
 				</tr>
 			</table>
+		</div>
+
+		<div id="conversation">
 		</div>
 
 		<div id="button_bar">
@@ -51,24 +50,39 @@
 		<script src="js/jquery.hammer.min.js"></script>
 
 		<script>
-			function addMsg() {
-				var ns = new Nonsense();
-				ns.firstName();
+			function addMsg(sender) {
+				var msg = HTML.find('#conversation').add('table');
+				msg.each('class', 'message');
+				var content = msg.add('tr');
+
+				var c;
+				if(sender == 'me') {
+					c = content.add('td').add('canvas').each('class', 'waveform');
+					content.add('td').add('p').textContent = "20 min ago";
+				} else {
+					content.add('td').add('p').textContent = "20 min ago";
+					c = content.add('td').add('canvas').each('class', 'waveform');
+				}
+				fakeAudio(c);
 			}
+
+			function receive() {
+				addMsg();
+				setTimeout(receive, Math.random()*10000+5000);
+			}
+
+			receive();
 		</script>
 
 		<script>
-			var c = $('#msg1')[0];
-			c.width = c.clientWidth;
-			c.height = c.clientHeight;
-			fakeAudio(c);
-		</script>
+			/*
+				setup the button
+			*/
 
-		<script>
+			// draw the button
 			var canvas = $('#button')[0];
 			var ctx = canvas.getContext('2d');
 
-			// draw the button
 			var width = 2;
 			var centerX = canvas.width/2;
 			var centerY = canvas.height/2;
@@ -82,22 +96,29 @@
 			ctx.lineWidth = width;
 			ctx.strokeStyle = '#660000';
 			ctx.stroke();
-		</script>
 
-		<script>
-			var start = $("#button").get
+			// set draggable
 			$("#button").draggable({ axis: "y", revert: true, revertDuration: 80,
 				stop: function(ev, ui) {
-					fakeAudio($('#msg1')[0]);
 					var offset = ui.position.top - ui.originalPosition.top;
 
 					if(offset > 0) {
-						alert('trash');
+						console.log('trash event');
 					} else {
-						alert('send');
+						addMsg('me');
+						console.log('send event');
 					}
 				}
 			});
+		</script>
+
+		<script>
+			/*
+				initialize stuff
+			*/
+
+			var ns = new Nonsense(Math.random());
+			$('#friend').text(ns.firstName());
 		</script>
 
         <!-- Google Analytics: change UA-XXXXX-X to be your site's ID. -->
