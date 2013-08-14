@@ -33,7 +33,7 @@
 		<div id="conversation">
 		</div>
 
-		<div id="button_bar">
+		<div id="control">
 			<center>
 				<canvas width=64 height=64 id="button"></canvas>
 			</center>
@@ -66,6 +66,10 @@
 					c = content.add('td').add('canvas').each('class', 'waveform');
 				}
 				fakeAudio(c);
+
+				// when scrolling, stay at bottom
+				var convo = document.getElementById("conversation");
+				convo.scrollTop = convo.scrollHeight;
 			}
 
 			function receive() {

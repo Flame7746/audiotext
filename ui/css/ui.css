@@ -1,6 +1,5 @@
 #button_bar {
 	padding: 4px;
-	background-color: black;
 }
 
 canvas.waveform {
@@ -11,4 +10,14 @@ canvas.waveform {
 table.message {
 	width: 100%;
 	font-family: "Arial Black", Gadget, sans-serif;
+	border: solid 1px;
+}
+
+#conversation {
+	height: 320px;
+	overflow: auto;
+}
+
+#control {
+	padding: 1em;
 }
