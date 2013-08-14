@@ -81,23 +81,24 @@
 			var button = new SuperButton(btn_canvas, 10);
 			button.render();
 
+			$("#button").on("mousedown", function(event){
+				button.record();
+			});
+
+			$("#button").on("mouseup", function(event){
+				button.stop();
+			});
+
 			// set draggable
 			$("#button").draggable({ axis: "y", revert: true, revertDuration: 80,
-				start: function(ev, ui) {
-					button.record();
-				},
-
 				stop: function(ev, ui) {
 					var offset = ui.position.top - ui.originalPosition.top;
 
 					if(offset > 0) {
 						button.trash();
-						console.log('trash event');
 					} else {
-						button.stop();
-						button.render();
 						addMsg('me');
-						console.log('send event');
+						button.trash();
 					}
 				}
 			});

@@ -2,8 +2,8 @@ function SuperButton(canvas, size) {
 	this.canvas = canvas;
 	this.size = size;	// seconds of recording time
 
-	this.recording = false;
-	this.pos = 0;		// time pos in recording
+	this.time = 0;		// time pos in recording
+	this.timer = null;	// recorder interval
 	this.audio = null;	// audio buffer
 
 	this.demo = 0;
@@ -95,14 +95,16 @@ SuperButton.prototype = {
 				}
 			}
 
-			var degrees = Math.floor(360 * this.audio.getChannelData(0).length / this.size);
+			var maxdegrees = 360 * this.audio.getChannelData(0).length / this.size;
+			var portion = this.time/this.size;
+			var degrees = Math.floor(portion*maxdegrees);
 			if(degrees > 360) degrees = 360;
 			var data = analyze(this.audio, degrees);
 
 			c.strokeStyle = 'blue';
 			var bias = -data.min;
 			var absmax = data.max + bias;
-			for(var i = 0; i < data.averages.length; i++) {
+			for(var i = 0; i < data.averages.length * portion; i++) {
 				var l = r * (data.averages[i] + bias) / absmax;
 				var a = 2 * Math.PI * i / 360;
 
@@ -122,13 +124,28 @@ SuperButton.prototype = {
 	},
 
 	record: function() {
-
+		var rate = 10;	// hz
+		var btn = this;
+		
+		if(btn.timer == null) {
+			btn.timer = setInterval(function() {
+				btn.time += 1/rate;
+				btn.render();
+				if(btn.time > btn.size) btn.stop();
+			}, 1000/rate);
+		}
 	},
 	
 	stop: function() {
+		if(this.timer != null) {
+			clearInterval(this.timer);
+			this.timer = null;
+		}
 	},
 
 	trash: function() {
-
+		this.stop();
+		this.time = 0;
+		this.render();
 	}
 }
