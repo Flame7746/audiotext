@@ -70,89 +70,32 @@
 
 			function receive() {
 				addMsg();
-				setTimeout(receive, Math.random()*10000+5000);
+				setTimeout(receive, Math.random()*60000+15000);
 			}
 
 			receive();
 		</script>
 
 		<script>
-			/*
-				setup the button
-			*/
-
-			// draw the button
-			var btn = $('#button')[0];
-
-			btn.recording = false;
-			btn.samples = [];
-			btn.time = 0;
-			btn.max = 10;
-
-			function btnDraw(btn) {
-				var ctx = btn.getContext('2d');
-
-				var width = 2;
-				var centerX = btn.width/2;
-				var centerY = btn.height/2;
-				var radius = btn.width/2-width/2;
-
-				ctx.fillStyle = "#F00";
-				ctx.beginPath();
-				ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI, false);
-				ctx.fillStyle = 'red';
-				ctx.fill();
-				ctx.lineWidth = width;
-				ctx.strokeStyle = '#660000';
-				ctx.stroke();
-
-				// draw amt filled
-				ctx.beginPath();
-				ctx.moveTo(centerX, centerY);
-				var a = btn.time/btn.max * Math.PI * 2 - Math.PI / 2;
-				ctx.lineTo(centerX + radius*Math.cos(a), centerY + radius*Math.sin(a));
-				ctx.strokeStyle = 'blue';
-				ctx.stroke();
-			} btnDraw(btn);
+			var btn_canvas = $('#button')[0];
+			var button = new SuperButton(btn_canvas, 10);
+			button.render();
 
 			// set draggable
 			$("#button").draggable({ axis: "y", revert: true, revertDuration: 80,
 				start: function(ev, ui) {
-					if(!button.recording) {
-						button.recording = true;
-
-						var rate = 100;
-						btn.timer = setInterval(function() {
-							btn.time += rate/1000;
-							btnDraw(btn);
-
-							if(btn.time > btn.max) {
-								clearInterval(btn.timer);
-								console.log("button filled 100%");
-								
-								btn.recording = false;
-								btn.time = 0;
-								btnDraw(btn);
-							}
-						}, rate);
-					}
+					button.record();
 				},
 
 				stop: function(ev, ui) {
-					if(button.recording) {
-						clearInterval(btn.timer);
-						console.log("button filled "+(100*btn.time/btn.max)+"%");
-
-						btn.recording = false;
-						btn.time = 0;
-						btnDraw(btn);
-					}
-
 					var offset = ui.position.top - ui.originalPosition.top;
 
 					if(offset > 0) {
+						button.trash();
 						console.log('trash event');
 					} else {
+						button.stop();
+						button.render();
 						addMsg('me');
 						console.log('send event');
 					}
@@ -161,12 +104,6 @@
 		</script>
 
 		<script>
-			/*
-				initialize stuff
-			*/
-
-			var btn = new SuperButton($('#button')[0], 10);
-
 			var ns = new Nonsense(Math.random());
 			$('#friend').text(ns.firstName());
 		</script>
